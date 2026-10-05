@@ -47,6 +47,7 @@ Supported compact suffixes:
 - `m` = million
 - `b` = billion
 - `t` = trillion
+- 
 
 ## Time formatting
 
