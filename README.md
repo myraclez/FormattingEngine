@@ -1,3 +1,6 @@
+# I want to make clear THIS IS MADE WITH AI
+
+
 # FormattingEngine
 
 
@@ -48,6 +51,7 @@ Supported compact suffixes:
 - `m` = million
 - `b` = billion
 - `t` = trillion
+- 
 
 ## Time formatting
 
