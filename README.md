@@ -1,3 +1,6 @@
+# I want to make clear THIS IS MADE WITH AI
+
+
 # FormattingEngine
 
 **FormattingEngine** is a small, dependency-free Java library by **myraclez** for formatting and parsing numbers and durations.
