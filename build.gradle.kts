@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "net.klyde"
-version = "1.0.0"
+version = "1.1"
 
 description = "A dependency-free Java library for formatting and parsing numbers and durations."
 
@@ -12,17 +12,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
 }
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.jar {

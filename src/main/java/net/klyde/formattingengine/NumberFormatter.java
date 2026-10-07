@@ -55,7 +55,7 @@ public final class NumberFormatter {
 
     /**
      * Formats a number in compact form with the requested maximum decimals.
-     * Example: readable(1890000, 1) -> "1.9m".
+     * Example: compact(1890000, 1) -> "1.9m".
      */
     public static String compact(long value, int decimals) {
         validateDecimals(decimals);
@@ -65,6 +65,29 @@ public final class NumberFormatter {
         }
 
         double absolute = Math.abs((double) value);
+        int tier = 0;
+
+        while (absolute >= 1000 && tier < SUFFIXES.length - 1) {
+            absolute /= 1000;
+            tier++;
+        }
+
+        double signed = value < 0 ? -absolute : absolute;
+        return formatCompact(signed, SUFFIXES[tier], decimals);
+    }
+
+    /**
+     * Formats a decimal number in compact form with the requested maximum decimals.
+     * Example: compact(7723987.44, 2) -> "7.72m".
+     */
+    public static String compact(double value, int decimals) {
+        validateDecimals(decimals);
+
+        if (value == 0) {
+            return "0";
+        }
+
+        double absolute = Math.abs(value);
         int tier = 0;
 
         while (absolute >= 1000 && tier < SUFFIXES.length - 1) {
