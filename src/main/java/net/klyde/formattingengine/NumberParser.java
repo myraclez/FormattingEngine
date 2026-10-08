@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Converts formatted/readable numbers back to whole numbers.
+ * Converts formatted/readable numbers back into numbers.
  */
 public final class NumberParser {
 
@@ -21,13 +21,51 @@ public final class NumberParser {
     }
 
     /**
-     * Parses grouped or readable numbers.
+     * Parses grouped or readable numbers into a double.
      *
-     * Examples:
+     * <p>Examples:
+     * <pre>
+     * "1,890,000" -> 1890000.0
+     * "1.89m"     -> 1890000.0
+     * "12.5"      -> 12.5
+     * </pre>
+     *
+     * <p>Values whose magnitude exceeds 2^53 lose precision, as is inherent to double.
+     *
+     * @throws FormattingException if the input is null, blank, malformed, or out of double range
+     */
+    public static double parse(String input) {
+        BigDecimal number = toBigDecimal(input);
+        double parsed = number.doubleValue();
+
+        if (Double.isInfinite(parsed)) {
+            throw new FormattingException("Number is outside the double range: " + input);
+        }
+
+        return parsed;
+    }
+
+    /**
+     * Parses grouped or readable numbers into a long, rounding halves away from zero.
+     *
+     * <p>Examples:
+     * <pre>
      * "1,890,000" -> 1890000
      * "1.89m"     -> 1890000
+     * "12.5"      -> 13
+     * </pre>
+     *
+     * @throws FormattingException if the input is null, blank, malformed, or out of long range
      */
-    public static long parse(String input) {
+    public static long parseLong(String input) {
+        try {
+            return toBigDecimal(input).setScale(0, RoundingMode.HALF_UP).longValueExact();
+        } catch (ArithmeticException exception) {
+            throw new FormattingException("Number is outside the long range: " + input, exception);
+        }
+    }
+
+    private static BigDecimal toBigDecimal(String input) {
         if (input == null || input.isBlank()) {
             throw new FormattingException("Number cannot be null or blank");
         }
@@ -51,11 +89,7 @@ public final class NumberParser {
             number = number.multiply(BigDecimal.valueOf(multiplier(suffix.toLowerCase(Locale.ROOT))));
         }
 
-        try {
-            return number.setScale(0, RoundingMode.HALF_UP).longValueExact();
-        } catch (ArithmeticException exception) {
-            throw new FormattingException("Number is outside the long range: " + input, exception);
-        }
+        return number;
     }
 
     private static long multiplier(String suffix) {

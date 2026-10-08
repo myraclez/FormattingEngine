@@ -12,13 +12,16 @@
 
 ## Number formatting
 
-Standard grouped formatting:
+Standard grouped formatting, for both `long` and `double`:
 
 ```java
 import net.klyde.formattingengine.NumberFormatter;
 
 NumberFormatter.format(1_000_000);
 // "1,000,000"
+
+NumberFormatter.format(1_234_567.8, 2);
+// "1,234,567.8"
 ```
 
 Compact formatting:
@@ -29,21 +32,48 @@ NumberFormatter.compact(1_890_000);
 
 NumberFormatter.compact(1_890_000, 1);
 // "1.9m"
+
+// For double input, always pass the decimals explicitly
+NumberFormatter.compact(1_890_000.0, 2);
+// "1.89m"
 ```
 
 `compact()` is the name used for the abbreviated magnitude style because it describes the format directly: large numbers are compressed into `k`, `m`, `b`, and `t`.
 
 ## Number parsing
 
+`parse` returns a `double`, so grouped, compact, and plain decimal input all work:
+
 ```java
 import net.klyde.formattingengine.NumberParser;
 
 NumberParser.parse("1,890,000");
-// 1890000
+// 1890000.0
 
 NumberParser.parse("1.89m");
-// 1890000
+// 1890000.0
+
+NumberParser.parse("1.234567k");
+// 1234.567
+
+NumberParser.parse("12.5");
+// 12.5
 ```
+
+Use `parseLong` when a whole number is required; it rounds halves away from zero
+and rejects anything outside the `long` range:
+
+```java
+NumberParser.parseLong("1.89m");
+// 1890000
+
+NumberParser.parseLong("12.5");
+// 13
+```
+
+Both throw `FormattingException` for null, blank, or malformed input.
+
+Values whose magnitude exceeds `2^53` lose precision, as is inherent to `double`.
 
 Supported compact suffixes:
 
@@ -51,7 +81,7 @@ Supported compact suffixes:
 - `m` = million
 - `b` = billion
 - `t` = trillion
-- 
+- `q` = quadrillion 
 
 ## Time formatting
 
